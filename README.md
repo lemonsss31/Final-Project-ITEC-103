@@ -113,20 +113,20 @@ your-project-folder/
 
 7. FILE REFERENCES ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   - app.py	The entire backend server. Contains all API routes, database logic, email sending, session handling, and file management. This is the only Python file you need to run.
-   - gallery.db	The SQLite database file. Auto-created when app.py first runs. Contains all users, photos, likes, comments, tags, follows, and OTP codes in one file.
-   - index.html	The single HTML page the browser loads. References all CSS and JS files. Contains the nav bar, gallery layout, lightbox, and upload modal placeholder.
-   - base.css	Global reset, CSS variables (colors, fonts, spacing), button styles, input styles, toast notifications, spinner, lightbox, and loading skeleton. Background images for auth and gallery pages are set here.
-   - auth.css	Styles for the login, register, and forgot password cards only. Handles the glass-effect card and dark overlay over the background image.
-   - gallery.css	Nav bar, search bar, tag filter pills, masonry photo grid, photo cards, like buttons, comment panels, and the left panel sidebar.
-   - upload.css	The upload modal, drop zone, image preview, and form inside the modal.
-   - sidebar.css	The profile sidebar that slides in from the right, and the left navigation panel.
-   - api.js	The fetch() wrapper function used by all other JS files. Also contains toast(), escHtml() for XSS prevention, and timeAgo() for timestamp formatting.
-   - auth.js	Handles login, registration, forgot password, OTP sending, password strength meter, and the logout confirmation dialog.
-   - gallery.js	Photo grid rendering, likes, comments, edit modal (30-min window), delete photo, lightbox, random photo spotlight, and the user profile popup card.
-   - upload.js	Upload modal HTML injection, drag-and-drop file handling, image preview, and the upload form submission.
-   - sidebar.js	Profile sidebar HTML injection, avatar upload, bio editing, stats loading, and account deletion.
-   - main.js	App entry point. Checks login session on load, builds the left panel, handles the tag search bar, and wires up the Escape key.
+   - app.py:	The entire backend server. Contains all API routes, database logic, email sending, session handling, and file management. This is the only Python file you need to run.
+   - gallery.db:	The SQLite database file. Auto-created when app.py first runs. Contains all users, photos, likes, comments, tags, follows, and OTP codes in one file.
+   - index.html:	The single HTML page the browser loads. References all CSS and JS files. Contains the nav bar, gallery layout, lightbox, and upload modal placeholder.
+   - base.css:	Global reset, CSS variables (colors, fonts, spacing), button styles, input styles, toast notifications, spinner, lightbox, and loading skeleton. Background images for auth and gallery pages are set here.
+   - auth.css:	Styles for the login, register, and forgot password cards only. Handles the glass-effect card and dark overlay over the background image.
+   - gallery.css:	Nav bar, search bar, tag filter pills, masonry photo grid, photo cards, like buttons, comment panels, and the left panel sidebar.
+   - upload.css:	The upload modal, drop zone, image preview, and form inside the modal.
+   - sidebar.css:	The profile sidebar that slides in from the right, and the left navigation panel.
+   - api.js:	The fetch() wrapper function used by all other JS files. Also contains toast(), escHtml() for XSS prevention, and timeAgo() for timestamp formatting.
+   - auth.js:	Handles login, registration, forgot password, OTP sending, password strength meter, and the logout confirmation dialog.
+   - gallery.js:	Photo grid rendering, likes, comments, edit modal (30-min window), delete photo, lightbox, random photo spotlight, and the user profile popup card.
+   - upload.js:	Upload modal HTML injection, drag-and-drop file handling, image preview, and the upload form submission.
+   - sidebar.js:	Profile sidebar HTML injection, avatar upload, bio editing, stats loading, and account deletion.
+   - main.js:	App entry point. Checks login session on load, builds the left panel, handles the tag search bar, and wires up the Escape key.
 
 9. TROPUBLESHOOTING ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
