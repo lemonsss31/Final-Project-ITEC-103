@@ -1,0 +1,162 @@
+/* ═══════════════════════════════════════════════
+   base.css  —  Reset, CSS variables, shared
+                components used everywhere
+   ═══════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #09090f;
+  --surface:  #111120;
+  --card:     #16162a;
+  --border:   #2a2a44;
+  --accent:   #7c3aed;
+  --accent2:  #a78bfa;
+  --cyan:     #06b6d4;
+  --rose:     #f43f5e;
+  --gold:     #f59e0b;
+  --text:     #e2e0f0;
+  --muted:    #6b6b8a;
+  --radius:   14px;
+  --font-logo: 'Caveat', cursive;
+  --font-head: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+/* ── BASE BODY ────────────────────────────────────────────── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── AUTH PAGE BACKGROUND (login / register / forgot) ──────── */
+#auth-page {
+  background-image: url('/static/images/Login-Register.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ── MAIN PAGE BACKGROUND (gallery page) ───────────────────── */
+#app {
+  background-image: url('/static/images/Main.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* NOISE GRAIN OVERLAY ─ TOP OF BOTH BACKGROUNDS */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+h1, h2, h3 { font-family: var(--font-head); }
+.hidden { display: none !important; }
+
+/* ── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ── BUTTONS ────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer; transition: all .2s; font-family: var(--font-body);
+  letter-spacing: .3px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #6d28d9; transform: translateY(-1px); box-shadow: 0 4px 20px #7c3aed55; }
+.btn-cyan    { background: var(--cyan);   color: #fff; }
+.btn-cyan:hover { background: #0891b2; transform: translateY(-1px); }
+.btn-danger  { background: var(--rose);   color: #fff; }
+.btn-danger:hover { background: #e11d48; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+}
+.btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-sm   { padding: 6px 12px; font-size: 12px; }
+.btn-full { width: 100%; }
+
+/* ── INPUTS ─────────────────────────────────── */
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-group label {
+  font-size: 12px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.input {
+  background: #0d0d1c; border: 1px solid var(--border); color: var(--text);
+  padding: 11px 14px; border-radius: 8px; font-size: 14px;
+  font-family: var(--font-body); transition: border-color .2s, box-shadow .2s; width: 100%;
+}
+.input:focus  { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px #7c3aed22; }
+.input::placeholder { color: var(--muted); }
+textarea.input { resize: vertical; min-height: 80px; }
+
+/* ── TOAST ──────────────────────────────────── */
+#toast-container {
+  position: fixed; top: 20px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 12px 18px; border-radius: 10px; font-size: 13px;
+  min-width: 220px; animation: slideIn .3s ease;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.success { border-left: 3px solid #22c55e; }
+.toast.error   { border-left: 3px solid var(--rose); }
+.toast.info    { border-left: 3px solid var(--accent2); }
+
+@keyframes slideIn  { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut  { to   { opacity: 0; transform: translateX(110%); } }
+
+/* ── SPINNER ────────────────────────────────── */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid #ffffff33; border-top-color: #fff;
+  border-radius: 50%; animation: spin .6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── LIGHTBOX ───────────────────────────────── */
+#lightbox {
+  position: fixed; inset: 0; z-index: 300;
+  background: #000000ee;
+  display: flex; align-items: center; justify-content: center;
+  animation: overlayIn .2s ease;
+}
+#lightbox img {
+  max-width: 90vw; max-height: 90vh;
+  border-radius: 8px; box-shadow: 0 20px 80px #000;
+  image-rendering: auto;
+  object-fit: contain;
+}
+#lightbox-close {
+  position: absolute; top: 20px; right: 24px;
+  background: none; border: 1px solid #ffffff33; color: #fff;
+  width: 40px; height: 40px; border-radius: 8px;
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── LOADING SKELETON ───────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--card) 25%, #1e1e38 50%, var(--card) 75%);
+  background-size: 200%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+.sk-card { height: 280px; break-inside: avoid; margin-bottom: 16px; }
+@keyframes shimmer { to { background-position: -200% 0; } }

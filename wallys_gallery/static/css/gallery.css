@@ -1,0 +1,289 @@
+/* ═══════════════════════════════════════════════
+   gallery.css  —  Nav, Tags, Grid, Cards
+   ═══════════════════════════════════════════════ */
+
+/* ── NAV ────────────────────────────────────── */
+#main-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: #09090fcc; backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+
+/* ── DOODLE LOGO ────────────────────────────────────── */
+.nav-logo {
+  font-family: var(--font-logo);
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent2), var(--cyan));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── ICON OF THE GALLERY APP ────────────────────────────────────── */
+.nav-logo-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+  /* image doesn't inherit the text gradient clip */
+  -webkit-text-fill-color: initial;
+  filter: drop-shadow(0 0 6px #7c3aed55);
+}
+
+.nav-right {
+  display: flex; align-items: center; gap: 14px;
+}
+
+/* ── NAV SEARCH BAR ─────────────────────────── */
+.nav-search-wrap {
+  display: flex; align-items: center;
+  background: #0d0d1c;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0 14px;
+  gap: 6px;
+  transition: border-color .2s, box-shadow .2s;
+  height: 36px;
+  min-width: 200px;
+}
+.nav-search-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #7c3aed22;
+}
+.nav-search-hash {
+  color: var(--accent2);
+  font-weight: 700;
+  font-size: 15px;
+  user-select: none;
+  flex-shrink: 0;
+}
+.nav-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-body);
+  flex: 1;
+  min-width: 0;
+}
+.nav-search-input::placeholder { color: var(--muted); }
+.nav-search-clear {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 13px; padding: 0;
+  transition: color .2s; flex-shrink: 0;
+}
+.nav-search-clear:hover { color: var(--rose); }
+
+/* ── NAV USER DISPLAY ───────── */
+.nav-user-display {
+  display: flex; align-items: center; gap: 8px;
+  /* pointer-events: none so it's purely display */
+  pointer-events: none;
+}
+.nav-user  { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.nav-user span { color: var(--accent2); font-weight: 500; }
+
+/* ── NAV AVATAR ───────── */
+.nav-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff;
+  overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border);
+}
+
+/* ── GALLERY PAGE ───────────────────────────── */
+#gallery-page {
+  padding: 28px 32px;
+  max-width: 1400px; margin: 0 auto;
+}
+
+.gallery-hero {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.gallery-hero h2 { font-size: 28px; font-weight: 700; }
+.gallery-hero h2 span {
+  background: linear-gradient(135deg, var(--accent2), var(--cyan));
+  background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* ── TAGS BAR ───────────────────────────────── */
+.tags-bar {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-bottom: 28px;
+}
+.tag-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.tag-pill {
+  padding: 5px 14px; border-radius: 99px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); color: var(--muted);
+  background: transparent; cursor: pointer;
+  transition: all .2s; font-family: var(--font-body);
+}
+.tag-pill:hover  { border-color: var(--accent2); color: var(--accent2); }
+.tag-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── MASONRY GRID ───────────────────────────── */
+.photo-grid { columns: 4; column-gap: 16px; }
+@media (max-width: 1100px) { .photo-grid { columns: 3; } }
+@media (max-width: 750px)  { .photo-grid { columns: 2; } }
+@media (max-width: 480px)  { .photo-grid { columns: 1; } }
+
+/* ── PHOTO CARD ─────────────────────────────── */
+.photo-card {
+  break-inside: avoid; margin-bottom: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: transform .25s, box-shadow .25s;
+  animation: fadeUp .4s ease both;
+}
+.photo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px #00000066;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── IMAGE AREA ─────────────────────────────── */
+.photo-img-wrap {
+  position: relative; overflow: hidden; cursor: zoom-in;
+}
+.photo-img-wrap img {
+  width: 100%; display: block;
+  transition: transform .4s ease;
+  /* true fps for GIFs — no CSS animation overrides */
+  image-rendering: auto;
+}
+.photo-card:hover .photo-img-wrap img { transform: scale(1.04); }
+
+/* ── CARD BODY ──────────────────────────────── */
+.photo-body { padding: 12px 14px; }
+
+.photo-user {
+  font-size: 12px; font-weight: 600; color: var(--accent2);
+  margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+}
+.photo-user .avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+.photo-caption {
+  font-size: 13px; color: var(--text);
+  margin-bottom: 8px; line-height: 1.5;
+}
+
+.photo-tags  { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.photo-tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 99px;
+  background: #7c3aed22; color: var(--accent2);
+  border: 1px solid #7c3aed44; cursor: pointer; transition: background .2s;
+}
+.photo-tag:hover { background: var(--accent); color: #fff; }
+
+/* ── ACTION ROW ─────────────────────────────── */
+.photo-actions {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 8px; border-top: 1px solid var(--border);
+}
+.like-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 20px; display: flex; align-items: center; gap: 4px;
+  color: var(--muted); transition: color .2s, transform .2s;
+  font-family: var(--font-body); padding: 0;
+}
+.like-btn:hover { color: var(--rose); transform: scale(1.15); }
+.like-btn.liked { color: var(--rose); animation: heartPop .3s ease; }
+@keyframes heartPop {
+  0%   { transform: scale(1);   }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1);   }
+}
+.like-count { font-size: 12px; color: var(--muted); }
+
+.comment-toggle {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 13px;
+  display: flex; align-items: center; gap: 4px;
+  transition: color .2s; font-family: var(--font-body); margin-left: 4px;
+}
+.comment-toggle:hover { color: var(--cyan); }
+
+.photo-time { font-size: 11px; color: var(--muted); margin-left: auto; }
+.delete-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 16px;
+  transition: color .2s; padding: 2px; margin-left: 2px;
+}
+.delete-btn:hover { color: var(--rose); }
+
+/* ── COMMENTS PANEL ─────────────────────────── */
+.comments-panel {
+  background: #0d0d1c; border-top: 1px solid var(--border);
+  padding: 12px 14px; display: none;
+}
+.comments-panel.open { display: block; animation: panelOpen .25s ease; }
+@keyframes panelOpen {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.comment-list {
+  max-height: 200px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;
+}
+.comment-item {
+  background: var(--card); border-radius: 8px;
+  padding: 8px 10px; font-size: 12px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 6px;
+}
+.comment-author { font-weight: 600; color: var(--accent2); font-size: 11px; margin-bottom: 2px; }
+.comment-text   { color: var(--text); line-height: 1.4; }
+.comment-del { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; }
+.comment-del:hover { color: var(--rose); }
+.comment-input-row { display: flex; gap: 6px; }
+.comment-input-row .input { font-size: 12px; padding: 8px 10px; }
+
+/* ── EMPTY STATE ────────────────────────────── */
+.empty-state {
+  grid-column: 1/-1; text-align: center;
+  padding: 80px 20px; color: var(--muted);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ── SEARCH HIGHLIGHT ───────────────────────── */
+.search-banner {
+  background: #7c3aed18; border: 1px solid #7c3aed44;
+  border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
+  font-size: 13px; color: var(--accent2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── EDIT + USERNAME LINK ───────────────────────── */
+.edit-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 15px; color: var(--muted);
+  transition: color .2s; padding: 2px; margin-left: 2px;
+}
+.edit-btn:hover { color: var(--accent2); }
+
+.photo-username-link {
+  cursor: pointer; transition: color .15s;
+}
+.photo-username-link:hover {
+  color: var(--cyan); text-decoration: underline;
+}

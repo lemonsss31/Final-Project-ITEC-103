@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════
+   auth.css  —  Login, Register, Forgot Password
+   ═══════════════════════════════════════════════ */
+
+/* ── PAGE WRAPPER ───────────────────────────── */
+#auth-page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; padding: 20px;
+}
+
+/* Dark overlay so the background image doesn't overpower the card */
+#auth-page::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* ── CARD ───────────────────────────────────── */
+.auth-card {
+  background: rgba(17, 17, 32, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 40px 80px #00000088;
+  position: relative; z-index: 1;
+  animation: cardIn .4s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+/* ── LOGO / TITLE ───────────────────────────── */
+.auth-logo { text-align: center; margin-bottom: 28px; }
+.auth-logo h1 {
+  font-size: 38px; font-weight: 800;
+  font-family: var(--font-logo);
+  background: linear-gradient(135deg, var(--accent2), var(--cyan));
+  background-clip: text; -webkit-text-fill-color: transparent;
+}
+.auth-logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+/* ── FORM ───────────────────────────────────── */
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── DIVIDER ────────────────────────────────── */
+.auth-divider {
+  text-align: center; color: var(--muted); font-size: 12px;
+  position: relative; margin: 4px 0;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: ''; position: absolute; top: 50%;
+  width: 40%; height: 1px; background: var(--border);
+}
+.auth-divider::before { left: 0; }
+.auth-divider::after  { right: 0; }
+
+/* ── OTP ROW ────────────────────────────────── */
+.otp-row         { display: flex; gap: 8px; }
+.otp-row .input  { flex: 1; }
+
+/* ── LINK BUTTON ────────────────────────────── */
+.link-btn {
+  background: none; border: none;
+  color: var(--accent2); cursor: pointer;
+  font-size: 13px; padding: 4px 0;
+  text-decoration: underline;
+  font-family: var(--font-body);
+}
+.link-btn:hover { color: var(--accent); }
+
+/* ── PASSWORD STRENGTH BAR ──────────────────── */
+.strength-bar {
+  height: 4px; border-radius: 99px;
+  background: var(--border); overflow: hidden; margin-top: 4px;
+}
+.strength-fill {
+  height: 100%; border-radius: 99px;
+  transition: width .3s, background .3s;
+}

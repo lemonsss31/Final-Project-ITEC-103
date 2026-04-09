@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════════════
+   upload.css  —  Upload Modal & Drop Zone
+   ═══════════════════════════════════════════════ */
+
+/* ── MODAL OVERLAY ──────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: #00000099; backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; animation: overlayIn .2s ease;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── MODAL BOX ──────────────────────────────── */
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 32px;
+  width: 100%; max-width: 500px;
+  animation: modalIn .3s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(.95) translateY(20px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0);    }
+}
+
+/* ── MODAL HEADER ───────────────────────────── */
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.modal-header h3 { font-size: 20px; }
+.modal-close {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  width: 32px; height: 32px; border-radius: 8px;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.modal-close:hover { border-color: var(--rose); color: var(--rose); }
+
+/* ── DROP ZONE ──────────────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--border); border-radius: 12px;
+  padding: 40px 20px; text-align: center; cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--accent); background: #7c3aed0a;
+}
+.drop-zone input[type=file] { display: none; }
+.drop-zone .icon { font-size: 36px; margin-bottom: 8px; }
+.drop-zone p { color: var(--muted); font-size: 13px; }
+.drop-zone p span { color: var(--accent2); font-weight: 500; cursor: pointer; }
+
+/* ── IMAGE PREVIEW ──────────────────────────── */
+.preview-img {
+  width: 100%; max-height: 220px; object-fit: contain;
+  border-radius: 8px; border: 1px solid var(--border); margin-top: 12px;
+}
+
+/* ── TAGS HINT ──────────────────────────────── */
+.tags-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── FORM SPACING INSIDE MODAL ──────────────── */
+.modal-form { display: flex; flex-direction: column; gap: 16px; }

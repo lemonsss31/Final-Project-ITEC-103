@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wally's Gallery</title>
+
+  <!-- TAB ICON -->
+  <link rel="icon" type="image/png" href="/static/images/favicon.png" />
+  <!-- HOME SCREEN SHORTCUT -->
+  <link rel="apple-touch-icon" href="/static/images/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700;800&family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/auth.css">
+  <link rel="stylesheet" href="/static/css/gallery.css">
+  <link rel="stylesheet" href="/static/css/upload.css">
+  <link rel="stylesheet" href="/static/css/sidebar.css">
+</head>
+<body>
+
+  <div id="toast-container"></div>
+  <div id="auth-page"></div>
+
+  <div id="app" class="hidden">
+
+    <!-- NAV -->
+    <nav id="main-nav">
+
+      <!-- Logo: small icon + text side by side -->
+      <div class="nav-logo">
+        <!-- NAV ICON -->
+        <img
+          src="/static/images/nav-logo.png"
+          alt="Wally's Gallery"
+          class="nav-logo-img"
+          onerror="this.style.display='none'"
+        />
+        Wally's Gallery
+      </div>
+
+      <div class="nav-right">
+
+        <!-- SEARCH BAR -->
+        <div class="nav-search-wrap">
+          <span class="nav-search-hash">#</span>
+          <input
+            id="nav-search-input"
+            class="nav-search-input"
+            type="text"
+            placeholder="search by tag…"
+            oninput="handleNavSearch(this.value)"
+            onkeydown="if(event.key==='Enter') commitNavSearch()"
+          />
+          <button class="nav-search-clear hidden" id="nav-search-clear" onclick="clearNavSearch()">✕</button>
+        </div>
+
+        <!-- Avatar + welcome text -->
+        <div class="nav-user-display">
+          <div class="nav-avatar" id="nav-avatar">?</div>
+          <span class="nav-user">Welcome, <span id="nav-username">—</span></span>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- APP LAYOUT -->
+    <div id="app-layout">
+      <div id="left-panel"></div>
+      <div id="gallery-main">
+        <div id="gallery-page">
+          <div class="gallery-hero">
+            <h2>Explore <span>the Gallery</span></h2>
+          </div>
+          <div class="tags-bar" id="tags-bar">
+            <span class="tag-label">Filter:</span>
+            <button class="tag-pill active" onclick="filterTag(null, this)">✦ All</button>
+          </div>
+          <div class="photo-grid" id="photo-grid">
+            <div class="skeleton sk-card"></div>
+            <div class="skeleton sk-card" style="height:200px"></div>
+            <div class="skeleton sk-card" style="height:340px"></div>
+            <div class="skeleton sk-card"></div>
+            <div class="skeleton sk-card" style="height:180px"></div>
+            <div class="skeleton sk-card" style="height:300px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#app -->
+
+  <div id="upload-modal" class="modal-overlay hidden"></div>
+
+  <div id="lightbox" class="hidden">
+    <img id="lightbox-img" src="" alt="Full view" />
+    <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/upload.js"></script>
+  <script src="/static/js/gallery.js"></script>
+  <script src="/static/js/sidebar.js"></script>
+  <script src="/static/js/main.js"></script>
+
+</body>
+</html>
