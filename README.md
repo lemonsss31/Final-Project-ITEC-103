@@ -1,15 +1,16 @@
 # Final-Project-ITEC-103
 Final Output: Web Gallery App
 
------ PLEASE VIEW IN CODE -----
+----------------------------------------------------------------------------------------- PLEASE VIEW IN CODE -----------------------------------------------------------------------------------------
 
 Stack: Python / Flask · SQLite · Vanilla JS · HTML/CSS
 Author: BSCS 1A - Xavier Kent C. Ortega
+App Name: Wally's Gallery
 
-1. SYSTEM OVERVIEW ---------------------
+1. SYSTEM OVERVIEW ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   - Wally's Gallery is a private, self-hosted photo-sharing platform. Users can register an account, upload photos and GIFs, tag them, like and comment on posts, follow each other, and manage their profile.
 
-2. FOLDER STRUCTURE ---------------------
+2. FOLDER STRUCTURE ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   - It should look ike this:
 
 your-project-folder/
@@ -45,13 +46,13 @@ your-project-folder/
     ├── uploads/            ← uploaded photos (auto-created)
     └── avatars/            ← user profile pictures (auto-created)
 
-3. REQUIREMENTS ---------------------
+3. REQUIREMENTS ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    Softwares:
    - Internet Connection, Browser, Python Compiler
    Libraries:
    - flask, flask-cors, bcrypt
 
-5. HOW TO RUN THE SYSTEM ---------------------
+5. HOW TO RUN THE SYSTEM ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    Step 1: Open VS Code then open folder, next locate the folder named "wallys_gallery" (base name) then open.
      #Example: "C:\Users\acer nitro v15\Downloads\School Activities 2nd Sem\ITEC 103\Project\wallys_gallery"
@@ -68,7 +69,7 @@ your-project-folder/
    The Database:
      - When app.py runs for the first time, it automatically creates gallery.db in your project folder and builds all the tables.
 
-6. FEATURES GUIDE ---------------------
+6. FEATURES GUIDE ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    Registration & Login
    - Register: Click "Create Account" → enter a username, email, password → click "Send OTP" → check your email for a 6-digit code → enter it → click "Create Account"
@@ -110,7 +111,8 @@ your-project-folder/
     •	Quick actions: Upload Photo, Browse All, My Photos, Random Photo
     •	Delete your account
 
-7. FILE REFERENCES
+7. FILE REFERENCES ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
    - app.py	The entire backend server. Contains all API routes, database logic, email sending, session handling, and file management. This is the only Python file you need to run.
    - gallery.db	The SQLite database file. Auto-created when app.py first runs. Contains all users, photos, likes, comments, tags, follows, and OTP codes in one file.
    - index.html	The single HTML page the browser loads. References all CSS and JS files. Contains the nav bar, gallery layout, lightbox, and upload modal placeholder.
@@ -126,7 +128,8 @@ your-project-folder/
    - sidebar.js	Profile sidebar HTML injection, avatar upload, bio editing, stats loading, and account deletion.
    - main.js	App entry point. Checks login session on load, builds the left panel, handles the tag search bar, and wires up the Escape key.
 
-8. TROPUBLESHOOTING
+9. TROPUBLESHOOTING ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
    - "ModuleNotFoundError: No module named flask"	Run:   pip install flask flask-cors bcrypt   then try again
    - "Address already in use" error: Another program is using port 5000. Either stop that program, or change the port in app.py last line to:   app.run(port=5001)   then visit localhost:5001
    - OTP email not arriving: Check your Gmail App Password is correct in app.py. Check your spam folder. Make sure 2-Step Verification is ON on your Google account.
@@ -136,4 +139,4 @@ your-project-folder/
    - "Edit" button missing on my photo: The 30-minute edit window has expired. You can still delete and re-upload the photo.
    - gallery.db file got deleted: Running app.py again creates a fresh empty database. All user accounts and photos are lost — this is why backups are important (see Section 8).
 
-Gamitin na ang Wally's Gallery. Maging Isang Bayolanatics.
+------------------------------------------------------------------------------------Gamitin na ang Wally's Gallery. Maging Isang Bayolanatics.------------------------------------------------------------------------------------
