@@ -56,8 +56,9 @@ your-project-folder/
 
    Step 1: Open VS Code then open folder, next locate the folder named "wallys_gallery" (base name) then open.
      #Example: "C:\Users\acer nitro v15\Downloads\School Activities 2nd Sem\ITEC 103\Project\wallys_gallery"
-   Step 2: Install the required Libararies
+   Step 2: Install the required Libararies / Extensions
      - Run this once in a terminal: pip install flask flask-cors bcrypt
+     - Download the extension SQLite Viewer to see the contents inside the gallery.dp file.
    Step 3: Start the server/system
      - Run this in a terminal:
        - cd wallys_gallery
@@ -68,6 +69,8 @@ your-project-folder/
    Step 5: First Time Setup
    The Database:
      - When app.py runs for the first time, it automatically creates gallery.db in your project folder and builds all the tables.
+  
+   
 
 6. FEATURES GUIDE ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
