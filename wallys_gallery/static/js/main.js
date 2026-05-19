@@ -102,6 +102,7 @@ function lp_sort(mode, btn) {
   window._currentSort = mode;
   document.querySelectorAll('[id^="lp-sort"]').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  _currentPage = 1;
   loadPhotos(window.activeTag, mode);
 }
 
@@ -142,6 +143,7 @@ function handleNavSearch(val) {
       return;
     }
     showSearchBanner(tag);
+    _currentPage = 1;
     loadPhotos(tag, window._currentSort);
     activeTag = tag;
   }, 350);
@@ -149,7 +151,7 @@ function handleNavSearch(val) {
 
 function commitNavSearch() {
   const val = (document.getElementById('nav-search-input')?.value||'').trim();
-  if (val) { showSearchBanner(val); loadPhotos(val, window._currentSort); activeTag = val; }
+  if (val) { showSearchBanner(val); _currentPage = 1; loadPhotos(val, window._currentSort); activeTag = val; }
 }
 
 function showSearchBanner(tag) {
