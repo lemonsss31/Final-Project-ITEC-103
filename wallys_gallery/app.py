@@ -342,7 +342,7 @@ def upload_photo():
     if "file" not in request.files: return jsonify({"error":"No file"}),400
     file = request.files["file"]
     if not file or not allowed_file(file.filename): return jsonify({"error":"Invalid file type"}),400
-    caption  = request.form.get("caption","").strip()
+    caption  = request.form.get("caption","").strip()[:100]
     tags_raw = request.form.get("tags","")
     tags = [t.strip().lower() for t in tags_raw.split(",") if t.strip()][:5]
     ext  = file.filename.rsplit('.',1)[1].lower()
@@ -369,7 +369,7 @@ def edit_photo(photo_id):
     if (datetime.utcnow()-created).total_seconds()>1800:
         db.close(); return jsonify({"error":"Edit window expired (30 minutes)"}),403
     d = request.json
-    new_caption  = d.get("caption", photo["caption"]).strip()
+    new_caption  = d.get("caption", photo["caption"]).strip()[:100]
     new_tags_raw = d.get("tags","")
     new_tags = [t.strip().lower() for t in new_tags_raw.split(",") if t.strip()][:5]
     db.execute("UPDATE photos SET caption=? WHERE id=?",(new_caption,photo_id))
@@ -523,4 +523,4 @@ def toggle_follow(user_id):
     return jsonify({"following":following,"followers":count})
 
 if __name__=="__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=6767)
