@@ -5,6 +5,11 @@
 
 let activeTag = null;
 
+// ── PAGINATION STATE ──────────────────────────────
+let _allPhotos  = [];   // full fetched list
+let _currentPage = 1;
+const PAGE_SIZE  = 10;
+
 // ── TAGS ──────────────────────────────────────────
 async function loadTags() {
   const r = await api('/api/tags');
@@ -41,17 +46,72 @@ async function loadPhotos(tag = null, sort = 'newest') {
   let photos = r.data;
   if (sort === 'liked') photos = [...photos].sort((a,b) => b.likes - a.likes);
 
+  _allPhotos   = photos;
+  _currentPage = 1;
+  renderPage();
+}
+
+function renderPage() {
+  const grid = document.getElementById('photo-grid');
   grid.innerHTML = '';
-  if (!photos.length) {
+
+  if (!_allPhotos.length) {
     grid.innerHTML = `
       <div class="empty-state" style="column-span:all">
         <div class="icon">📷</div>
-        <p>No photos yet${tag ? ` tagged #${tag}` : ''}.</p>
+        <p>No photos yet${activeTag ? ` tagged #${activeTag}` : ''}.</p>
         <p style="font-size:12px;margin-top:8px">Be the first to upload!</p>
       </div>`;
+    renderPagination();
     return;
   }
-  photos.forEach((p,i) => grid.insertAdjacentHTML('beforeend', buildPhotoCard(p, i)));
+
+  const start = (_currentPage - 1) * PAGE_SIZE;
+  const slice = _allPhotos.slice(start, start + PAGE_SIZE);
+  slice.forEach((p, i) => grid.insertAdjacentHTML('beforeend', buildPhotoCard(p, i)));
+  renderPagination();
+}
+
+function renderPagination() {
+  document.getElementById('pagination-bar')?.remove();
+  const totalPages = Math.ceil(_allPhotos.length / PAGE_SIZE);
+  if (totalPages <= 1) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'pagination-bar';
+  bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:28px 0 12px;column-span:all;width:100%';
+
+  const prevBtn = `<button onclick="changePage(${_currentPage - 1})"
+    style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:${_currentPage === 1 ? 'var(--muted)' : 'var(--text)'};cursor:${_currentPage === 1 ? 'not-allowed' : 'pointer'};font-family:var(--font-body);font-size:13px"
+    ${_currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+  const nextBtn = `<button onclick="changePage(${_currentPage + 1})"
+    style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:${_currentPage === totalPages ? 'var(--muted)' : 'var(--text)'};cursor:${_currentPage === totalPages ? 'not-allowed' : 'pointer'};font-family:var(--font-body);font-size:13px"
+    ${_currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+
+  let pageButtons = '';
+  for (let i = 1; i <= totalPages; i++) {
+    const active = i === _currentPage;
+    pageButtons += `<button onclick="changePage(${i})"
+      style="width:34px;height:34px;border-radius:8px;border:1px solid ${active ? 'var(--accent)' : 'var(--border)'};
+      background:${active ? 'var(--accent)' : 'transparent'};color:${active ? '#fff' : 'var(--text)'};
+      cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:${active ? '600' : '400'}">${i}</button>`;
+  }
+
+  bar.innerHTML = prevBtn + pageButtons + nextBtn;
+
+  // Insert after photo-grid
+  const grid = document.getElementById('photo-grid');
+  grid.insertAdjacentElement('afterend', bar);
+}
+
+function changePage(page) {
+  const totalPages = Math.ceil(_allPhotos.length / PAGE_SIZE);
+  if (page < 1 || page > totalPages) return;
+  _currentPage = page;
+  renderPage();
+  // Scroll back to top of gallery
+  document.getElementById('gallery-page')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── BUILD CARD ────────────────────────────────────
@@ -206,7 +266,11 @@ function openEditModal(photoId) {
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="input-group">
           <label>Caption</label>
-          <textarea class="input" id="edit-caption" rows="3" placeholder="Say something about this photo…">${escHtml(currentCaption)}</textarea>
+          <textarea class="input" id="edit-caption" rows="3" placeholder="Say something about this photo…" maxlength="100"
+            oninput="document.getElementById('edit-caption-count').textContent = this.value.length">${escHtml(currentCaption)}</textarea>
+          <div style="font-size:11px;color:var(--muted);text-align:right;margin-top:4px">
+            <span id="edit-caption-count">${escHtml(currentCaption).length}</span>/100
+          </div>
         </div>
         <div class="input-group">
           <label>Tags</label>
