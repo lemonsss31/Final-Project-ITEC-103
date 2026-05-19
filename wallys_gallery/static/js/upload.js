@@ -39,7 +39,12 @@ function buildUploadModal() {
             <span style="font-size:10px;color:var(--muted);text-transform:none">(optional)</span>
           </label>
           <textarea class="input" id="upload-caption"
-            placeholder="Say something about your wally…" rows="2"></textarea>
+            placeholder="Say something about your wally…" rows="2"
+            maxlength="100"
+            oninput="document.getElementById('upload-caption-count').textContent = this.value.length"></textarea>
+          <div style="font-size:11px;color:var(--muted);text-align:right;margin-top:4px">
+            <span id="upload-caption-count">0</span>/100
+          </div>
         </div>
 
         <!-- TAGS -->
@@ -72,6 +77,7 @@ function closeUploadModal() {
   document.getElementById('upload-preview').classList.add('hidden');
   document.getElementById('file-input').value    = '';
   document.getElementById('upload-caption').value = '';
+  const uc = document.getElementById('upload-caption-count'); if (uc) uc.textContent = '0';
   document.getElementById('upload-tags').value    = '';
   selectedFile = null;
 }
