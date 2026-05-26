@@ -65,6 +65,12 @@ function buildLeftPanel() {
       <div id="lp-trending-tags" style="color:var(--muted);font-size:12px">Loading…</div>
     </div>
 
+    <div class="lp-divider"></div>
+    <div class="lp-section-label">Community</div>
+    <button class="lp-btn" onclick="openUsersBrowser()">
+      <span class="lp-icon">👥</span> Browse Bayolas
+    </button>
+
     <div style="margin-top:auto;padding-top:16px;">
       <button class="lp-btn" onclick="openSidebar()">
         <span class="lp-icon">⚙️</span> My Bayola
@@ -102,7 +108,6 @@ function lp_sort(mode, btn) {
   window._currentSort = mode;
   document.querySelectorAll('[id^="lp-sort"]').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  _currentPage = 1;
   loadPhotos(window.activeTag, mode);
 }
 
@@ -143,7 +148,6 @@ function handleNavSearch(val) {
       return;
     }
     showSearchBanner(tag);
-    _currentPage = 1;
     loadPhotos(tag, window._currentSort);
     activeTag = tag;
   }, 350);
@@ -151,7 +155,7 @@ function handleNavSearch(val) {
 
 function commitNavSearch() {
   const val = (document.getElementById('nav-search-input')?.value||'').trim();
-  if (val) { showSearchBanner(val); _currentPage = 1; loadPhotos(val, window._currentSort); activeTag = val; }
+  if (val) { showSearchBanner(val); loadPhotos(val, window._currentSort); activeTag = val; }
 }
 
 function showSearchBanner(tag) {
