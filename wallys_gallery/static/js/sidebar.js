@@ -40,11 +40,11 @@ function buildSidebar() {
           <span class="sb-stat-val" id="sb-photos">—</span>
           <span class="sb-stat-label">Wallys</span>
         </div>
-        <div class="sb-stat">
+        <div class="sb-stat" id="sb-followers-stat" style="cursor:pointer" onclick="sbOpenFollowList('followers')" title="View followers">
           <span class="sb-stat-val" id="sb-followers">—</span>
           <span class="sb-stat-label">Followers</span>
         </div>
-        <div class="sb-stat">
+        <div class="sb-stat" id="sb-following-stat" style="cursor:pointer" onclick="sbOpenFollowList('following')" title="View following">
           <span class="sb-stat-val" id="sb-following">—</span>
           <span class="sb-stat-label">Following</span>
         </div>
@@ -99,13 +99,16 @@ function buildSidebar() {
         <button class="sb-action-btn" onclick="closeSidebar(); loadRandomPhoto()">
           <span>🎲</span> Random Wally
         </button>
+        <button class="sb-action-btn" onclick="closeSidebar(); openUsersBrowser()">
+          <span>👥</span> Browse Bayolas
+        </button>
       </div>
 
       <!-- Danger Zone -->
       <div class="sidebar-section sidebar-danger-zone">
         <div class="sidebar-section-title" style="color:var(--rose)">Bayola's Danger Zone</div>
         <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">
-          Wally will delete ypur account permanently. All your photos, likes, and comments will be bayola'ed forever.
+          Wally will delete your account permanently. All your photos, likes, and comments will be bayola'ed forever.
         </p>
         <button class="btn btn-danger btn-full btn-sm" onclick="confirmDeleteAccount()">
           Delete Bayola's Account
@@ -249,6 +252,15 @@ async function loadSidebarStats(userId) {
   document.getElementById('sb-photos').textContent    = r.data.photos    ?? '—';
   document.getElementById('sb-followers').textContent = r.data.followers  ?? '—';
   document.getElementById('sb-following').textContent = r.data.following  ?? '—';
+}
+
+// ── FOLLOW LIST FROM SIDEBAR ──────────────────────
+function sbOpenFollowList(type) {
+  if (!window.currentUser) return;
+  closeSidebar();
+  setTimeout(() => {
+    openFollowList(window.currentUser.id, window.currentUser.username, type);
+  }, 320);
 }
 
 // ── MY PHOTOS ─────────────────────────────────────
