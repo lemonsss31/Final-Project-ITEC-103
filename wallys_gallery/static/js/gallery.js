@@ -5,10 +5,43 @@
 
 let activeTag = null;
 
-// ── PAGINATION STATE ──────────────────────────────
-let _allPhotos  = [];   // full fetched list
-let _currentPage = 1;
-const PAGE_SIZE  = 10;
+// ── INFINITE SCROLL STATE ─────────────────────────
+let _allPhotos   = [];
+let _renderedCount = 0;
+const PAGE_SIZE  = 12;
+let _isLoading   = false;
+
+// ── SCROLL SENTINEL ───────────────────────────────
+function _initInfiniteScroll() {
+  _destroyInfiniteScroll();
+  const sentinel = document.createElement('div');
+  sentinel.id = 'scroll-sentinel';
+  sentinel.style.cssText = 'height:1px;width:100%;margin-top:8px;';
+  document.getElementById('photo-grid')?.insertAdjacentElement('afterend', sentinel);
+
+  window._scrollObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) _loadNextBatch();
+  }, { rootMargin: '200px' });
+  window._scrollObserver.observe(sentinel);
+}
+
+function _destroyInfiniteScroll() {
+  window._scrollObserver?.disconnect();
+  window._scrollObserver = null;
+  document.getElementById('scroll-sentinel')?.remove();
+}
+
+function _loadNextBatch() {
+  if (_isLoading) return;
+  const remaining = _allPhotos.length - _renderedCount;
+  if (remaining <= 0) return;
+  _isLoading = true;
+  const grid = document.getElementById('photo-grid');
+  const slice = _allPhotos.slice(_renderedCount, _renderedCount + PAGE_SIZE);
+  slice.forEach((p, i) => grid.insertAdjacentHTML('beforeend', buildPhotoCard(p, _renderedCount + i)));
+  _renderedCount += slice.length;
+  _isLoading = false;
+}
 
 // ── TAGS ──────────────────────────────────────────
 async function loadTags() {
@@ -34,6 +67,7 @@ function filterTag(tag, el) {
 
 // ── LOAD PHOTOS ───────────────────────────────────
 async function loadPhotos(tag = null, sort = 'newest') {
+  _destroyInfiniteScroll();
   const grid = document.getElementById('photo-grid');
   grid.innerHTML = [280,200,340,260,180,300,250,220]
     .map(h => `<div class="skeleton sk-card" style="height:${h}px"></div>`)
@@ -46,13 +80,8 @@ async function loadPhotos(tag = null, sort = 'newest') {
   let photos = r.data;
   if (sort === 'liked') photos = [...photos].sort((a,b) => b.likes - a.likes);
 
-  _allPhotos   = photos;
-  _currentPage = 1;
-  renderPage();
-}
-
-function renderPage() {
-  const grid = document.getElementById('photo-grid');
+  _allPhotos     = photos;
+  _renderedCount = 0;
   grid.innerHTML = '';
 
   if (!_allPhotos.length) {
@@ -62,56 +91,11 @@ function renderPage() {
         <p>No photos yet${activeTag ? ` tagged #${activeTag}` : ''}.</p>
         <p style="font-size:12px;margin-top:8px">Be the first to upload!</p>
       </div>`;
-    renderPagination();
     return;
   }
 
-  const start = (_currentPage - 1) * PAGE_SIZE;
-  const slice = _allPhotos.slice(start, start + PAGE_SIZE);
-  slice.forEach((p, i) => grid.insertAdjacentHTML('beforeend', buildPhotoCard(p, i)));
-  renderPagination();
-}
-
-function renderPagination() {
-  document.getElementById('pagination-bar')?.remove();
-  const totalPages = Math.ceil(_allPhotos.length / PAGE_SIZE);
-  if (totalPages <= 1) return;
-
-  const bar = document.createElement('div');
-  bar.id = 'pagination-bar';
-  bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;padding:28px 0 12px;column-span:all;width:100%';
-
-  const prevBtn = `<button onclick="changePage(${_currentPage - 1})"
-    style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:${_currentPage === 1 ? 'var(--muted)' : 'var(--text)'};cursor:${_currentPage === 1 ? 'not-allowed' : 'pointer'};font-family:var(--font-body);font-size:13px"
-    ${_currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
-
-  const nextBtn = `<button onclick="changePage(${_currentPage + 1})"
-    style="padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:${_currentPage === totalPages ? 'var(--muted)' : 'var(--text)'};cursor:${_currentPage === totalPages ? 'not-allowed' : 'pointer'};font-family:var(--font-body);font-size:13px"
-    ${_currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
-
-  let pageButtons = '';
-  for (let i = 1; i <= totalPages; i++) {
-    const active = i === _currentPage;
-    pageButtons += `<button onclick="changePage(${i})"
-      style="width:34px;height:34px;border-radius:8px;border:1px solid ${active ? 'var(--accent)' : 'var(--border)'};
-      background:${active ? 'var(--accent)' : 'transparent'};color:${active ? '#fff' : 'var(--text)'};
-      cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:${active ? '600' : '400'}">${i}</button>`;
-  }
-
-  bar.innerHTML = prevBtn + pageButtons + nextBtn;
-
-  // Insert after photo-grid
-  const grid = document.getElementById('photo-grid');
-  grid.insertAdjacentElement('afterend', bar);
-}
-
-function changePage(page) {
-  const totalPages = Math.ceil(_allPhotos.length / PAGE_SIZE);
-  if (page < 1 || page > totalPages) return;
-  _currentPage = page;
-  renderPage();
-  // Scroll back to top of gallery
-  document.getElementById('gallery-page')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  _loadNextBatch();
+  _initInfiniteScroll();
 }
 
 // ── BUILD CARD ────────────────────────────────────
@@ -128,7 +112,6 @@ function buildPhotoCard(p, i) {
     .map(t => `<span class="photo-tag" onclick="filterTag('${escHtml(t)}',this)">#${escHtml(t)}</span>`)
     .join('');
 
-  // edit button only for owner within 30 min window
   const editBtn = (isOwner && p.editable)
     ? `<button class="edit-btn" onclick="openEditModal(${p.id})" title="Edit post">✏️</button>`
     : '';
@@ -234,6 +217,7 @@ async function deletePhoto(id) {
   const r = await api(`/api/photos/${id}`, { method:'DELETE' });
   if (r.ok) {
     document.getElementById(`card-${id}`)?.remove();
+    _allPhotos = _allPhotos.filter(p => p.id !== id);
     toast('Photo deleted','info');
     loadTags();
     if (typeof refreshLeftPanelTags === 'function') refreshLeftPanelTags();
@@ -297,7 +281,7 @@ function startEditCountdown(photoId) {
   const card = document.getElementById(`card-${photoId}`);
   const createdRaw = card?.dataset?.created || '';
 
-  let secsLeft = 1800; 
+  let secsLeft = 1800;
   if (createdRaw) {
     const createdAt = new Date(createdRaw.replace(' ', 'T') + 'Z');
     const elapsed   = Math.floor((Date.now() - createdAt.getTime()) / 1000);
@@ -379,7 +363,6 @@ document.getElementById('lightbox').addEventListener('click', e => {
 async function loadRandomPhoto() {
   const r = await api('/api/photos/random');
   if (!r.ok) { toast('No photos available yet','info'); return; }
-  // open the photo in a mini spotlight overlay
   showRandomSpotlight(r.data);
 }
 
@@ -420,9 +403,8 @@ function showRandomSpotlight(p) {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 }
 
-/* ------- USER PROF CARD ---------- */
+/* ------- USER PROFILE CARD ---------- */
 async function openUserProfile(userId, username) {
-
   document.getElementById('user-profile-card')?.remove();
 
   const card = document.createElement('div');
@@ -463,11 +445,8 @@ async function openUserProfile(userId, username) {
     </button>`;
 
   card.querySelector('.upc-panel').innerHTML = `
-    <!-- Header image strip -->
     <div style="height:6px;background:linear-gradient(90deg,var(--accent),var(--cyan))"></div>
-
     <div style="padding:24px">
-      <!-- Top row: avatar + name + follow -->
       <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:20px">
         ${avatarHtml}
         <div style="flex:1;min-width:0">
@@ -478,23 +457,21 @@ async function openUserProfile(userId, username) {
         <button onclick="document.getElementById('user-profile-card').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
 
-      <!-- Stats grid -->
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:20px">
         ${[
           ['📸', u.photos, 'Posts'],
           ['❤️', u.total_likes, 'Likes'],
           ['💬', u.total_comments, 'Comments'],
-          ['👥', u.followers, 'Followers'],
-          ['➡️', u.following, 'Following'],
-        ].map(([icon,val,label]) => `
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center">
+          ['👥', u.followers, 'Followers', `openFollowList(${userId},'${escHtml(u.username)}','followers')`],
+          ['➡️', u.following, 'Following', `openFollowList(${userId},'${escHtml(u.username)}','following')`],
+        ].map(([icon,val,label,clickFn]) => `
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;${clickFn ? 'cursor:pointer;' : ''}" ${clickFn ? `onclick="${clickFn}"` : ''}>
             <div style="font-size:14px">${icon}</div>
             <div style="font-size:16px;font-weight:700;color:var(--accent2)">${val}</div>
             <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">${label}</div>
           </div>`).join('')}
       </div>
 
-      <!-- View photos button -->
       <button onclick="document.getElementById('user-profile-card').remove();loadPhotosByUser(${userId},'${escHtml(u.username)}')"
         class="btn btn-ghost btn-full btn-sm">
         View ${escHtml(u.username)}'s Wally →
@@ -516,8 +493,65 @@ async function upcToggleFollow(userId) {
   toast(r.data.following ? 'Now following!' : 'Unfollowed', 'info');
 }
 
+// ── FOLLOWERS / FOLLOWING LIST POPUP ──────────────
+async function openFollowList(userId, username, type) {
+  document.getElementById('follow-list-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'follow-list-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `
+    <div onclick="document.getElementById('follow-list-overlay').remove()" style="position:absolute;inset:0;background:#00000099;backdrop-filter:blur(6px);animation:overlayIn .2s ease"></div>
+    <div style="position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:380px;overflow:hidden;animation:cardIn .3s ease;max-height:80vh;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
+        <h3 style="font-family:var(--font-head);font-size:18px">${escHtml(username)}'s ${type === 'followers' ? 'Followers' : 'Following'}</h3>
+        <button onclick="document.getElementById('follow-list-overlay').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div id="follow-list-body" style="overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <div class="skeleton" style="height:52px;border-radius:10px"></div>
+        <div class="skeleton" style="height:52px;border-radius:10px"></div>
+        <div class="skeleton" style="height:52px;border-radius:10px"></div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const endpoint = type === 'followers'
+    ? `/api/users/${userId}/followers`
+    : `/api/users/${userId}/following`;
+  const r = await api(endpoint);
+  const body = document.getElementById('follow-list-body');
+  if (!body) return;
+
+  if (!r.ok) {
+    body.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Could not load list.</p>`;
+    return;
+  }
+  if (!r.data.length) {
+    body.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No ${type} yet.</p>`;
+    return;
+  }
+
+  body.innerHTML = r.data.map(u => {
+    const initial = (u.username||'?').charAt(0).toUpperCase();
+    const avatarHtml = u.avatar
+      ? `<img src="${u.avatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border)" />`
+      : `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>`;
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:border-color .2s"
+        onclick="document.getElementById('follow-list-overlay').remove();document.getElementById('user-profile-card')?.remove();openUserProfile(${u.id},'${escHtml(u.username)}')">
+        ${avatarHtml}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${escHtml(u.username)}</div>
+          ${u.bio ? `<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(u.bio)}</div>` : ''}
+        </div>
+        <span style="font-size:12px;color:var(--accent2)">→</span>
+      </div>`;
+  }).join('');
+}
+
 // ── MY PHOTOS ─────────────────────────────────────
 async function loadPhotosByUser(userId, username) {
+  _destroyInfiniteScroll();
   const grid = document.getElementById('photo-grid');
   grid.innerHTML = [280,200,340,260,180,300]
     .map(h => `<div class="skeleton sk-card" style="height:${h}px"></div>`)
@@ -534,5 +568,68 @@ async function loadPhotosByUser(userId, username) {
       </div>`;
     return;
   }
-  r.data.forEach((p,i) => grid.insertAdjacentHTML('beforeend', buildPhotoCard(p,i)));
+  _allPhotos     = r.data;
+  _renderedCount = 0;
+  _loadNextBatch();
+  _initInfiniteScroll();
+}
+
+// ── USERS BROWSER ─────────────────────────────────
+async function openUsersBrowser() {
+  document.getElementById('users-browser-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'users-browser-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:550;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `
+    <div onclick="document.getElementById('users-browser-overlay').remove()" style="position:absolute;inset:0;background:#00000099;backdrop-filter:blur(6px);animation:overlayIn .2s ease"></div>
+    <div style="position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;overflow:hidden;animation:cardIn .3s ease;max-height:85vh;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
+        <h3 style="font-family:var(--font-head);font-size:18px">Bayola's Community</h3>
+        <button onclick="document.getElementById('users-browser-overlay').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div id="users-browser-body" style="overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <div class="skeleton" style="height:68px;border-radius:10px"></div>
+        <div class="skeleton" style="height:68px;border-radius:10px"></div>
+        <div class="skeleton" style="height:68px;border-radius:10px"></div>
+        <div class="skeleton" style="height:68px;border-radius:10px"></div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  const r = await api('/api/users');
+  const body = document.getElementById('users-browser-body');
+  if (!body) return;
+
+  if (!r.ok) {
+    body.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Could not load users.</p>`;
+    return;
+  }
+  if (!r.data.length) {
+    body.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No users yet.</p>`;
+    return;
+  }
+
+  body.innerHTML = r.data.map(u => {
+    const initial = (u.username||'?').charAt(0).toUpperCase();
+    const avatarHtml = u.avatar
+      ? `<img src="${u.avatar}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--border)" />`
+      : `<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0">${initial}</div>`;
+    const isMe = window.currentUser && u.id === window.currentUser.id;
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:border-color .2s"
+        onclick="document.getElementById('users-browser-overlay').remove();openUserProfile(${u.id},'${escHtml(u.username)}')">
+        ${avatarHtml}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px">
+            ${escHtml(u.username)}
+            ${isMe ? `<span style="font-size:10px;background:#7c3aed33;color:var(--accent2);padding:1px 6px;border-radius:99px;border:1px solid #7c3aed44">you</span>` : ''}
+          </div>
+          ${u.bio ? `<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${escHtml(u.bio)}</div>` : ''}
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">📸 ${u.photos ?? 0} wallys</div>
+        </div>
+        <span style="font-size:12px;color:var(--accent2);flex-shrink:0">→</span>
+      </div>`;
+  }).join('');
 }
