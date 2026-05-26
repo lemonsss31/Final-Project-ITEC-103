@@ -522,5 +522,46 @@ def toggle_follow(user_id):
     db.commit(); db.close()
     return jsonify({"following":following,"followers":count})
 
+
+@app.route("/api/users")
+def list_users():
+    db = get_db()
+    rows = db.execute("""
+        SELECT u.id, u.username, u.avatar, u.bio,
+               COUNT(p.id) as photos
+        FROM users u
+        LEFT JOIN photos p ON p.owner_id = u.id
+        GROUP BY u.id
+        ORDER BY u.username ASC
+    """).fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/api/users/<int:user_id>/followers")
+def get_followers(user_id):
+    db = get_db()
+    rows = db.execute("""
+        SELECT u.id, u.username, u.avatar, u.bio
+        FROM follows f
+        JOIN users u ON u.id = f.follower_id
+        WHERE f.following_id = ?
+        ORDER BY u.username ASC
+    """, (user_id,)).fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/api/users/<int:user_id>/following")
+def get_following(user_id):
+    db = get_db()
+    rows = db.execute("""
+        SELECT u.id, u.username, u.avatar, u.bio
+        FROM follows f
+        JOIN users u ON u.id = f.following_id
+        WHERE f.follower_id = ?
+        ORDER BY u.username ASC
+    """, (user_id,)).fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
+
 if __name__=="__main__":
     app.run(debug=True, port=6767)
