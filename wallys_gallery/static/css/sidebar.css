@@ -186,3 +186,13 @@
   font-size: 12px; font-weight: 700; color: #fff;
   overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border);
 }
+
+/* ── CLICKABLE STAT (followers / following) ─── */
+.sb-stat[onclick] {
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+}
+.sb-stat[onclick]:hover {
+  border-color: var(--accent2);
+  background: #7c3aed18;
+}
